@@ -4,19 +4,27 @@
 ###calcBC
 #` Calculate Taxonomic distances between samples 
 #' @param site list with elements core (species data), ages and dataset (Name to add to figures)
+#' @param method Distance metric recognised by vegdist
+#' @param makeNullDistances logical make NULL distances
 
-
-calcBC <- function(site, method = "bray") {
-	core <- site$core
-	ages <- site$ages
-	dataset <- site$dataset
+calcBC <- function(site, method = "bray", makeNullDistances = TRUE) {
+  res <- with(site, {
 	
-	# Do the B-C metric
-	turn <- as.matrix(vegdist(core, method = method))
-	BC1 <- diag(turn[-1, -ncol(turn)])
-	BC2 <- diag(turn[-(1:2), -ncol(turn)])
-
-	return(list(ages = ages, BC1 = BC1, BC2 = BC2, dataset = dataset))
+  	# Do the distance metric
+  	turn <- as.matrix(vegdist(core, method = method))
+  	BC1 <- diag(turn[-1, -ncol(turn)])
+  	BC2 <- diag(turn[-(1:2), -ncol(turn)])
+    if(is.null(site$counts)){
+      counts <-300
+    }
+    if(makeNullDistances){
+      nullDistances <- getNullDistances(spp = core, counts = counts, prob = c(0.5, 0.95), nrep = 100, method = method)
+    }else{
+      nullDistances <- NULL
+    }
+  	list(ages = ages, BC1 = BC1, BC2 = BC2, dataset = dataset, nullDistances = nullDistances)
+  })
+	return(res)
 }
 
 
