@@ -92,7 +92,7 @@ extractDist <- function(BCobject, nDist, ord = 1){
     obj <- BCobject$BC2
   }
 	want <- order(obj, decreasing = TRUE)[1:nDist]
-	distEvents <-	BCobject$ages[want]
+	distEvents <-	data.frame(ages = BCobject$ages[want], magnitude = obj[want])
 	return(distEvents)
 }
 
@@ -120,7 +120,7 @@ plot.pca.time <- function(site, pcaWant, distEvents, PCs){
 
   # Plot PCs against time
   with(site, plot(ages, PCs[,pcaWant], type = "o", pch = 20))
-  abline(v = distEvents, lty= 2, col= "red")
+  abline(v = distEvents$ages, lty= 2, col= "red")
    
 }
 
@@ -200,12 +200,12 @@ plotFig1 <- function(resList, nPCs, PCs) {
 		
 		for(i in 1:nPCs){
 			plot( ages, PCs[,i], type = "o", pch =20, xlim = c(max(ages), min(ages)), ylab = 	"Age (cal yr BP)", xlab = names(PC)[i])
-			abline(v = recov$time, lty = 2, col = "red")
+			abline(v = recov$ages, lty = 2, col = "red")
 		
 		}
 		plot(ages[-1], BC$BC1, xlim = c(max(BC$ages), min(BC$ages)), type = "h")
 				
-		points(recov$time, rep(max(BC$BC1), length(recov$time)), xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 11, col = "blue")
+		points(recov$ages, rep(max(BC$BC1), length(recov$ages)), xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 11, col = "blue")
 		
 		zones$null <- max(BC$BC1)
 		by(zones, zones$zone, function(x){
@@ -221,9 +221,9 @@ plotFig1 <- function(resList, nPCs, PCs) {
 
 # Table contains the disturbance event, the BC score for that disturbance event and the estimated recovery rate
 
-plotFig3 <- function(resList){
-	with(resList$recov, {
-       plot(BC1, recov, xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 20, col = "blue")
+plotFig3 <- function(recov){
+	with(recov, {
+       plot(magnitude, recov, xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 20, col = "blue")
        })
 }
 
