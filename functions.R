@@ -188,7 +188,7 @@ getNullDistances <- function(spp, counts = 300, prob = c(0.5, 0.95), nrep = 100,
 
 plotFig1 <- function(resList) {
 	
-	opar <- par(mfrow = c((nPCs+1), 1), mar = c(3,3,1,1))
+	opar <- par(mfrow = c((nPCs+1), 1), mar = c(3, 3, 1, 1))
 	on.exit(par(opar))
 	with(resList, {
 		
