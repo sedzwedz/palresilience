@@ -63,6 +63,7 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 		  pdf(paste("decisionPlot_", dataset, ".pdf", sep ="" ))
 		}
 		opar <- par(mfrow = c(3,2), mar = c(3,3,1,1), mgp = c(1.5, .5, 0), oma = c(0, 0, 1, 0))
+    on.exit(par(opar))
 		plot(ages[-1], BC1, type = "h")
     if(!is.null(nullDistances)){
       points(ages[-1], nullDistances[-1], col = "blue", pch = "-")
@@ -75,7 +76,6 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 		qqnorm(BC2)
 		qqline(BC2)
 		title(main = dataset, outer = TRUE)
-		par <- opar
 		if(print.pdf == TRUE){
 		  dev.off()
 		}
@@ -85,9 +85,8 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 ############### IDENTIFY THE DISTURBANCE TIME POINTS 
 
 extractDist <- function(calcBC.obj, nDist ){
-	want <- sort(calcBC.obj$BC1, decreasing = TRUE)[1:nDist]
-	wantTime <- match(want, calcBC.obj$BC1)
-	distEvents <- 	calcBC.obj$ages[wantTime]
+	want <- order(calcBC.obj$BC1, decreasing = TRUE)[1:nDist]
+	distEvents <-	calcBC.obj$ages[want]
 	return(distEvents)
 }
 
@@ -122,12 +121,12 @@ plot.pca.time <- function(site, pcaWant, distEvents){
 
 # Calculate the cluster analysis
 calcClust <- function( site) {
-	par(mfrow = c(2,2), mar=c(5,5,5,5))
-	diss = vegdist(site$core, method="bray")
-	clust  =  chclust(diss)
-	plot(clust,hang=-1, main="Constrained Cluster Analysis", cex=0.4)
+	opar <-par(mfrow = c(2,2), mar=c(5,5,5,5))
+  on.exit(par(opar))
+	diss <- vegdist(site$core, method="bray")
+	clust  <-  chclust(diss)
+	plot(clust, hang = -1, main = "Constrained Cluster Analysis", cex = 0.4)
 	bstick(clust, 10)
-	par(mfrow = c(1,1))
 	return(clust)
 }
 
@@ -189,8 +188,8 @@ getNullDistances <- function(spp, counts = 300, prob = c(0.5, 0.95), nrep = 100,
 
 plotFig1 <- function(resList) {
 	
-	par(mfrow = c((nPCs+1), 1), mar = c(3,3,1,1))
-		
+	opar <- par(mfrow = c((nPCs+1), 1), mar = c(3,3,1,1))
+	on.exit(par(opar))
 	with(resList, {
 		
 		for(i in 1:nPCs){
@@ -219,6 +218,8 @@ plotFig1 <- function(resList) {
 # Table contains the disturbance event, the BC score for that disturbance event and the estimated recovery rate
 
 plotFig3 <- function(resList){
-	with(resList$recov, plot(BC1, recov, xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 20, col = "blue"))
+	with(resList$recov, {
+       plot(BC1, recov, xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 20, col = "blue")
+       })
 }
 
