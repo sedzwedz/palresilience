@@ -84,8 +84,14 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 
 ############### IDENTIFY THE DISTURBANCE TIME POINTS 
 
-extractDist <- function(BCobject, nDist ){
-	want <- order(BCobject$BC1, decreasing = TRUE)[1:nDist]
+extractDist <- function(BCobject, nDist, ord = 1){
+  if(ord == 1) {
+    obj  <- BCobject$B1
+  }
+  else{
+    obj <- BCobject$B2
+  }
+	want <- order(obj, decreasing = TRUE)[1:nDist]
 	distEvents <-	BCobject$ages[want]
 	return(distEvents)
 }
@@ -110,7 +116,7 @@ sigPC <- function(site) {
 
 ###### Plot the PC axes for estimating plots
 
-plot.pca.time <- function(site, pcaWant, distEvents){
+plot.pca.time <- function(site, pcaWant, distEvents, PCs){
 
   # Plot PCs against time
   with(site, plot(ages, PCs[,pcaWant], type = "o", pch = 20))
@@ -186,18 +192,18 @@ getNullDistances <- function(spp, counts = 300, prob = c(0.5, 0.95), nrep = 100,
 ####### FIGURE 1 PLOT 
 
 
-plotFig1 <- function(resList) {
+plotFig1 <- function(resList, nPCs, PCs) {
 	
 	opar <- par(mfrow = c((nPCs+1), 1), mar = c(3, 3, 1, 1))
 	on.exit(par(opar))
 	with(resList, {
 		
 		for(i in 1:nPCs){
-			plot( ages, PC[,i], type = "o", pch =20, xlim = c(max(ages), min(ages)), ylab = 	"Age (cal yr BP)", xlab = names(PC)[i])
+			plot( ages, PCs[,i], type = "o", pch =20, xlim = c(max(ages), min(ages)), ylab = 	"Age (cal yr BP)", xlab = names(PC)[i])
 			abline(v = recov$time, lty = 2, col = "red")
 		
 		}
-		plot( ages[-1], BC$BC1, xlim = c(max(BC$ages), min(BC$ages)), type = "h")
+		plot(ages[-1], BC$BC1, xlim = c(max(BC$ages), min(BC$ages)), type = "h")
 				
 		points(recov$time, rep(max(BC$BC1), length(recov$time)), xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 11, col = "blue")
 		
@@ -205,10 +211,8 @@ plotFig1 <- function(resList) {
 		by(zones, zones$zone, function(x){
 		  lines(x$ages, x$null, col = (x$zone+1))
 		})
-	}
-	)
+	})
 }
-
 
 
 
