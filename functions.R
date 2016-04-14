@@ -1,14 +1,17 @@
 
 ############# FUNCTIONS FOR PALAEORESILIENCE WORKSHOP
+#` Calculate Taxonomic distances between samples 
+#' @param site list with elements core (species data), ages and dataset (Name to add to figures)
 
-calcBC <- function(site) {
+
+calcBC <- function(site, method = "bray") {
 	
 	core <- site$core
 	ages <- site$ages
 	dataset <- site$dataset
 	
 	# Do the B-C metric
-	turn <- as.matrix(vegdist(core, method = "bray"))
+	turn <- as.matrix(vegdist(core, method = method))
 	BC1 <- diag(turn[-1, -ncol(turn)])
 	BC2 <- diag(turn[-(1:2), -ncol(turn)])
 
