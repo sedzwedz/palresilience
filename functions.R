@@ -40,6 +40,17 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 	})
 }
 
+############### IDENTIFY THE DISTURBANCE TIME POINTS 
+
+extractDist <- function(calcBC.obj, nDist ){
+	want <- sort(calcBC.obj$BC1, decreasing = TRUE)[1:nDist]
+	wantTime <- match(want, calcBC.obj$BC1)
+	distEvents <- 	calcBC.obj$ages[wantTime]
+	return(distEvents)
+}
+
+
+
 ######################################
 ####null distance - based on resampling observed counts
 
