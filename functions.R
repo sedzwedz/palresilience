@@ -1,11 +1,12 @@
 
 ############# FUNCTIONS FOR PALAEORESILIENCE WORKSHOP
+
+###calcBC
 #` Calculate Taxonomic distances between samples 
 #' @param site list with elements core (species data), ages and dataset (Name to add to figures)
 
 
 calcBC <- function(site, method = "bray") {
-	
 	core <- site$core
 	ages <- site$ages
 	dataset <- site$dataset
@@ -18,6 +19,11 @@ calcBC <- function(site, method = "bray") {
 	return(list(ages = ages, BC1 = BC1, BC2 = BC2, dataset = dataset))
 }
 
+
+###plotBC
+#` Plot Taxonomic distances between samples 
+#' @param BCobject result of plotBC
+#' @param print.pdf logical. Print to pdf. If FALSE, prints to screen.
 
 plotBC<- function(BCobject, print.pdf= FALSE)	{
 	
