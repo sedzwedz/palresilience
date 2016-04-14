@@ -57,6 +57,46 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 	})
 }
 
+############### IDENTIFY THE DISTURBANCE TIME POINTS 
+
+extractDist <- function(calcBC.obj, nDist ){
+	want <- sort(calcBC.obj$BC1, decreasing = TRUE)[1:nDist]
+	wantTime <- match(want, calcBC.obj$BC1)
+	distEvents <- 	calcBC.obj$ages[wantTime]
+	return(distEvents)
+}
+
+
+### FIND THE SIGNIFICANT PCS
+
+sigPC <- function(site) {
+  core <- site$core
+
+  # Do a PCA and check the screeplot
+  pca <- rda(core)
+  #  summary(pca)
+
+  bstick <- screeplot(pca, bstick = TRUE)
+
+  # Extract Principal components and return them
+  PC <- scores(pca)$sites # only gives the first two PCs
+  return(PC)
+  
+}
+
+###### Plot the PC axes for estimating plots
+
+plot.pca.time <- function(site, pcaWant, distEvents){
+
+  # Plot PCs against time
+  with(site, plot(ages, PCs[,pcaWant], type = "o", pch = 20))
+  abline(v = distEvents, lty= 2, col= "red")
+   
+}
+
+
+
+
 ######################################
 ####null distance - based on resampling observed counts
 
@@ -94,5 +134,50 @@ getNullDistances <- function(spp, counts = 300, prob = c(0.5, 0.95), nrep = 100,
   res <- mapply(getNullDist, sp = spp, count = counts)    
   t(res)
 }
+
+
+
+####### FIGURE 1 PLOT (WITH ARGUMENTS)
+
+nPCs <- 2
+
+par(mfrow = c((nPCs+1), 1), mar = c(3,3,1,1))
+pcAxes <- list(pc1 = rnorm(10), pc2 = rnorm(10))
+ages <- 1:10
+bc <- rbinom(9, size= 10, prob = 0.5)/10
+agesBC <- ages[-1]
+chgpt <- c(4,8)
+
+
+plotFig1 <- function(resObject) {
+	
+	with(resObject, {
+		for(i in 1:nPCs){
+			plot(  ages, pcAxes[[i]], type = "o", pch =20, xlim = c(max(ages), min(ages)), ylab = 	"Age (cal yr BP)", xlab = names(pcAxes)[i])
+		abline(v = chgpt, lty = 2, col = "red")
+		
+		}
+		plot( ages[-1], bc, xlim = c(max(ages), min(ages)), type = "h", ylim = c(0,1))
+		points(chgpt, rep(0.95, length(chgpt)), xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 11, col = "blue")
+	})
+}
+
+
+
+
+
+###### FIGURE 3 PLOT (WITH ARGUMENTS)
+
+resTab <- data.frame(time= 1:10, BC = rnorm(10), recov = rnorm (10), threshold = rbinom(10, size=1, prob = 0.5))
+
+# Table contains the disturbance event, the BC score for that disturbance event and the estimated recovery rate
+
+plotRes <- function(resTab){
+	
+	with(resTab[resTab$threshold == 1,], plot(BC, recov, xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 11, col = "blue"))
+	with(resTab[resTab$threshold == 0, ], points(BC, recov, col = "red", pch = 20))
+		
+}
+
 
 
