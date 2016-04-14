@@ -27,13 +27,15 @@ core <- core[,-1]
 
 strat.plot(core, yvar = ages, scale.percent= TRUE)
 dev.off()
-coreT <- sqrt(core)
+coreT <- (core)
 plot(ages[-1], diff(ages))
 coreCrop <- coreT[-c(1:22),]
 agesCrop <- ages[-c(1:22)]
 
 # build a list containing all the info needed to run the functions
 purple <- list(core = coreCrop, ages = agesCrop, dataset = "purple")
+purple <- check.list(purple)
+
 
 # clean up the workstation
 rm(coreCrop, agesCrop, core, ages)
@@ -45,12 +47,14 @@ BC <- calcBC(site= purple)
 plotBC(BC)
 
 # Choose how many perturbations you want and find out where they are in the record
-distEvents <- extractDist(calcBC.obj = purpleBC, nDist = 1)
+distEvents <- extractDist(calcBC.obj = BC, nDist = 3)
 
 # Calculate the number sig axes from the PCA and extract the ones you are interested in
-PC <-sigPC(site = purple)
+PCs <-sigPC(site = purple)
 
 # Plot a PC that you are interested in and also plot where the disturbance event is
+
+par(mfrow= c(2,1))
 plot.pca.time(site = purple, pcaWant= 1, distEvents)
 plot.pca.time(site = purple, pcaWant= 2, distEvents)
 
@@ -65,7 +69,7 @@ nPCs <- 2
 # NOW YOU NEED TO ESTIMATE THE RECOVERY RATE YOURSELF....
 
 
-recov <- c(50)
+recov <- c(50,100, 250)
 recov <- cbind(distEvents, recov)
 
 
