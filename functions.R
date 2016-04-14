@@ -1,5 +1,26 @@
 
 ############# FUNCTIONS FOR PALAEORESILIENCE WORKSHOP
+#' Checks input data and corrects if necessary
+#' @param site list with elements core (species data), ages and dataset (Name to add to figures)
+
+check.list <- function(site){
+  if(any(diff(site$ages) < 0)){
+    stopifnot(all(diff(site$ages) < 0))
+    site$core <- site$core[order(site$ages), ]
+    site$ages <- sort(site$ages)
+  }
+  if(all(colSums(site$core) < 1))#check if percent. Convert otherwise 
+    {
+    site$core <- site$core * 100
+  }
+  print(paste("N samples  = ", length(site$ages)))
+  print(paste("Median resolution  = ", median(diff(site$ages))))
+  print(paste("Median sum percent  = ", median(rowSums(site$core))))
+              
+  site 
+}
+
+
 
 ###calcBC
 #` Calculate Taxonomic distances between samples 
@@ -8,6 +29,7 @@
 #' @param makeNullDistances logical make NULL distances
 
 calcBC <- function(site, method = "bray", makeNullDistances = TRUE) {
+  require(vegan)
   res <- with(site, {
 	
   	# Do the distance metric
@@ -43,7 +65,7 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 		opar <- par(mfrow = c(3,2), mar = c(3,3,1,1), mgp = c(1.5, .5, 0), oma = c(0, 0, 1, 0))
 		plot(ages[-1], BC1, type = "h")
     if(!is.null(nullDistances)){
-      points(ages[,-1], nullDistances[-1], col = "blue", pch = "-")
+      points(ages[-1], nullDistances[-1], col = "blue", pch = "-")
     }
 		plot(ages[-c(1,2)], BC2, type = "h")
 		hist(BC1)
@@ -125,17 +147,18 @@ getNullDistances <- function(spp, counts = 300, prob = c(0.5, 0.95), nrep = 100,
   spp <- as.data.frame(t(spp))
   
   getNullDist <- function(sp, count){
-    dists <- replicate(nrep, {#browser()
+    dists <- replicate(nrep, {
       newCounts <- sample(sppNames, prob = sp, replace = TRUE, size = count)
       newCounts <- table(c(sppNames, newCounts)) - 1
-      bothCounts <- rbind(sp, newCounts)##need to check species order
+      bothCounts <- rbind(sp, newCounts/sum(newCounts) * 100)##need to check species order
       vegdist(bothCounts, method = "bray")
     })
     quantile(dists, prob = prob)  
   }
   
   res <- mapply(getNullDist, sp = spp, count = counts)    
-  t(res)
+  if(length(prob) >1) res <- t(res)
+  res
 }
 
 
