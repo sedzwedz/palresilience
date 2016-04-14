@@ -84,9 +84,9 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 
 ############### IDENTIFY THE DISTURBANCE TIME POINTS 
 
-extractDist <- function(calcBC.obj, nDist ){
-	want <- order(calcBC.obj$BC1, decreasing = TRUE)[1:nDist]
-	distEvents <-	calcBC.obj$ages[want]
+extractDist <- function(BCobject, nDist ){
+	want <- order(BCobject$BC1, decreasing = TRUE)[1:nDist]
+	distEvents <-	BCobject$ages[want]
 	return(distEvents)
 }
 
