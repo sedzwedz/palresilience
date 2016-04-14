@@ -86,10 +86,10 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 
 extractDist <- function(BCobject, nDist, ord = 1){
   if(ord == 1) {
-    obj  <- BCobject$B1
+    obj  <- BCobject$BC1
   }
   else{
-    obj <- BCobject$B2
+    obj <- BCobject$BC2
   }
 	want <- order(obj, decreasing = TRUE)[1:nDist]
 	distEvents <-	BCobject$ages[want]
