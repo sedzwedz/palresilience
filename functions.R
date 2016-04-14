@@ -87,7 +87,7 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 extractDist <- function(calcBC.obj, nDist ){
 	want <- sort(calcBC.obj$BC1, decreasing = TRUE)[1:nDist]
 	wantTime <- match(want, calcBC.obj$BC1)
-	distEvents <- 	calcBC.obj$ages[wantTime]
+	distEvents <- 	data.frame(time = calcBC.obj$ages[wantTime], BC1 = calcBC.obj$BC1[wantTime])
 	return(distEvents)
 }
 
