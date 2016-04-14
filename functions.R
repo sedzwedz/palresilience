@@ -57,7 +57,7 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 #' @param counts Vector of pollen sums. Defaults to 300.
 #' @param prob Probabilites of null distribution required.
 #' @param nrep Number of trials for null model. Ideally 1000 but slow.
-#' @param dist Distance metric
+#' @param method Distance metric
 #' @details Null distribution of distances expected from counting errors
 #' @result Matrix of distances at probabilities requested
 #' @example 
@@ -67,7 +67,7 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 
 
 #for each level, resample pollen counts, find distance between original and resampled counts, find xx% limit on distr. cf obseved ample to sample differences
-getNullDistances <- function(spp, counts = 300, prob = c(0.5, 0.95), nrep = 100, dist = "bray"){
+getNullDistances <- function(spp, counts = 300, prob = c(0.5, 0.95), nrep = 100, method = "bray"){
   print("This function is slow")
   spp <- spp[, order(names(spp))]
   sppNames <- names(spp)
