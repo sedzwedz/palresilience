@@ -18,7 +18,7 @@ calcBC <- function(site, method = "bray", makeNullDistances = TRUE) {
       counts <-300
     }
     if(makeNullDistances){
-      nullDistances <- getNullDistances(spp = core, counts = counts, prob = c(0.5, 0.95), nrep = 100, method = method)
+      nullDistances <- getNullDistances(spp = core, counts = counts, prob = c(0.95), nrep = 100, method = method)
     }else{
       nullDistances <- NULL
     }
@@ -42,6 +42,9 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 		}
 		opar <- par(mfrow = c(3,2), mar = c(3,3,1,1), mgp = c(1.5, .5, 0), oma = c(0, 0, 1, 0))
 		plot(ages[-1], BC1, type = "h")
+    if(!is.null(nullDistances)){
+      points(ages[,-1], nullDistances[-1], col = "blue", pch = "-")
+    }
 		plot(ages[-c(1,2)], BC2, type = "h")
 		hist(BC1)
 		hist(BC2)
