@@ -50,6 +50,35 @@ extractDist <- function(calcBC.obj, nDist ){
 }
 
 
+### FIND THE SIGNIFICANT PCS
+
+sigPC <- function(site) {
+  core <- site$core
+
+  # Do a PCA and check the screeplot
+  pca <- rda(core)
+  #  summary(pca)
+
+  bstick <- screeplot(pca, bstick = TRUE)
+
+  # Extract Principal components and return them
+  PC <- scores(pca)$sites # only gives the first two PCs
+  return(PC)
+  
+}
+
+###### Plot the PC axes for estimating plots
+
+plot.pca.time <- function(site, pcaWant, distEvents){
+
+  # Plot PCs against time
+  with(site, plot(ages, PCs[,pcaWant], type = "o", pch = 20))
+  abline(v = distEvents, lty= 2, col= "red")
+   
+}
+
+
+
 
 ######################################
 ####null distance - based on resampling observed counts
