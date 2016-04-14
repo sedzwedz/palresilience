@@ -120,6 +120,28 @@ plot.pca.time <- function(site, pcaWant, distEvents){
 }
 
 
+# Calculate the cluster analysis
+calcClust <- function( site) {
+	par(mfrow = c(2,2), mar=c(5,5,5,5))
+	diss = vegdist(site$core, method="bray")
+	clust  =  chclust(diss)
+	plot(clust,hang=-1, main="Constrained Cluster Analysis", cex=0.4)
+	bstick(clust, 10)
+	par(mfrow = c(1,1))
+	return(clust)
+}
+
+
+# Make the zones
+makeZones <- function(clust, nGroups, site){
+	core <- site$core
+	ages <- site$ages
+	sigClust <- cutree(clust, k=nGroups)
+	zones <- data.frame(ages = ages, zone = sigClust)
+	return(zones)
+}
+
+
 
 
 ######################################
@@ -162,48 +184,41 @@ getNullDistances <- function(spp, counts = 300, prob = c(0.5, 0.95), nrep = 100,
 }
 
 
-
-####### FIGURE 1 PLOT (WITH ARGUMENTS)
-
-nPCs <- 2
-
-par(mfrow = c((nPCs+1), 1), mar = c(3,3,1,1))
-pcAxes <- list(pc1 = rnorm(10), pc2 = rnorm(10))
-ages <- 1:10
-bc <- rbinom(9, size= 10, prob = 0.5)/10
-agesBC <- ages[-1]
-chgpt <- c(4,8)
+####### FIGURE 1 PLOT 
 
 
-plotFig1 <- function(resObject) {
+plotFig1 <- function(resList) {
 	
-	with(resObject, {
+	par(mfrow = c((nPCs+1), 1), mar = c(3,3,1,1))
+		
+	with(resList, {
+		
 		for(i in 1:nPCs){
-			plot(  ages, pcAxes[[i]], type = "o", pch =20, xlim = c(max(ages), min(ages)), ylab = 	"Age (cal yr BP)", xlab = names(pcAxes)[i])
-		abline(v = chgpt, lty = 2, col = "red")
+			plot( ages, PC[,i], type = "o", pch =20, xlim = c(max(ages), min(ages)), ylab = 	"Age (cal yr BP)", xlab = names(PC)[i])
+			abline(v = recov$time, lty = 2, col = "red")
 		
 		}
-		plot( ages[-1], bc, xlim = c(max(ages), min(ages)), type = "h", ylim = c(0,1))
-		points(chgpt, rep(0.95, length(chgpt)), xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 11, col = "blue")
-	})
+		plot( ages[-1], BC$BC1, xlim = c(max(BC$ages), min(BC$ages)), type = "h")
+				
+		points(recov$time, rep(max(BC$BC1), length(recov$time)), xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 11, col = "blue")
+		
+		zones$null <- max(BC$BC1)
+		by(zones, zones$zone, function(x){
+		  lines(x$ages, x$null, col = (x$zone+1))
+		})
+	}
+	)
 }
 
 
 
 
 
-###### FIGURE 3 PLOT (WITH ARGUMENTS)
-
-resTab <- data.frame(time= 1:10, BC = rnorm(10), recov = rnorm (10), threshold = rbinom(10, size=1, prob = 0.5))
+###### FIGURE 3 PLOT 
 
 # Table contains the disturbance event, the BC score for that disturbance event and the estimated recovery rate
 
-plotRes <- function(resTab){
-	
-	with(resTab[resTab$threshold == 1,], plot(BC, recov, xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 11, col = "blue"))
-	with(resTab[resTab$threshold == 0, ], points(BC, recov, col = "red", pch = 20))
-		
+plotFig3 <- function(resList){
+	with(resList$recov, plot(BC1, recov, xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 20, col = "blue"))
 }
-
-
 
