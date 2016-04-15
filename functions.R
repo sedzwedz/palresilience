@@ -93,6 +93,7 @@ extractDist <- function(BCobject, nDist, ord = 1){
   }
 	want <- order(obj, decreasing = TRUE)[1:nDist]
 	distEvents <-	data.frame(ages = BCobject$ages[want], magnitude = obj[want])
+  distEvents <- distEvents[order(distEvents$ages),]
 	return(distEvents)
 }
 
