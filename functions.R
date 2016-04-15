@@ -128,7 +128,7 @@ plot.pca.time <- function(site, pcaWant, distEvents, PCs){
 
 # Calculate the cluster analysis
 calcClust <- function( site) {
-	opar <-par(mfrow = c(2,2), mar=c(5,5,5,5))
+	opar <-par(mfrow = c(2,2), mar=c(3, 3, 1, 1), mgp = c(1.5, .5, 0))
   on.exit(par(opar))
 	diss <- vegdist(site$core, method="bray")
 	clust  <-  chclust(diss)
