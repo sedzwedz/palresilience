@@ -168,16 +168,14 @@ makeZones <- function(clust, nGroups, site){
 
 #for each level, resample pollen counts, find distance between original and resampled counts, find xx% limit on distr. cf obseved ample to sample differences
 getNullDistances <- function(spp, counts = 300, prob = c(0.5, 0.95), nrep = 100, method = "bray"){
-  print("This function is slow")
-  spp <- spp[, order(names(spp))]
   sppNames <- names(spp)
   spp <- as.data.frame(t(spp))
   
   getNullDist <- function(sp, count){
-    dists <- replicate(nrep, {
-      newCounts <- sample(sppNames, prob = sp, replace = TRUE, size = count)
-      newCounts <- table(c(sppNames, newCounts)) - 1
-      bothCounts <- rbind(sp, newCounts/sum(newCounts) * 100)##need to check species order
+    newCounts <- rmultinom(n = nrep, size = count, prob = sp)
+    newCounts <- newCounts / count * 100
+    dists <- apply(newCounts, 2, function(nc){
+      bothCounts <- rbind(sp, nc)
       vegdist(bothCounts, method = "bray")
     })
     quantile(dists, prob = prob)  
