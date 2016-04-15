@@ -44,7 +44,7 @@ calcBC <- function(site, method = "bray", makeNullDistances = TRUE) {
     }else{
       nullDistances <- NULL
     }
-  	list(ages = ages, BC1 = BC1, BC2 = BC2, dataset = dataset, nullDistances = nullDistances)
+  	list(ages = ages[-length(ages)], BC1 = BC1, BC2 = BC2, dataset = dataset, nullDistances = nullDistances)
   })
 	return(res)
 }
@@ -64,11 +64,11 @@ plotBC<- function(BCobject, print.pdf= FALSE)	{
 		}
 		opar <- par(mfrow = c(3,2), mar = c(3,3,1,1), mgp = c(1.5, .5, 0), oma = c(0, 0, 1, 0))
     on.exit(par(opar))
-		plot(ages[-1], BC1, type = "h")
+		plot(ages, BC1, type = "h")
     if(!is.null(nullDistances)){
       points(ages[-1], nullDistances[-1], col = "blue", pch = "-")
     }
-		plot(ages[-c(1,2)], BC2, type = "h")
+		plot(ages[-2], BC2, type = "h")
 		hist(BC1)
 		hist(BC2)
 		qqnorm(BC1)
