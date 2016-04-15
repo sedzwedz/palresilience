@@ -1,12 +1,13 @@
 
+
 #####################
 # SCRIPT FOR RUNNING ON YOUR DATA
 
 ######################
 
 
-install.packages("rioja")
-install.packages("vegan")
+# install.packages("rioja")
+# install.packages("vegan")
 
 library("vegan")
 library("rioja")
@@ -47,16 +48,16 @@ BC <- calcBC(site= purple)
 plotBC(BC)
 
 # Choose how many perturbations you want and find out where they are in the record
-distEvents <- extractDist(calcBC.obj = BC, nDist = 3)
+distEvents <- extractDist(BCobj = BC, nDist = 3, ord = 1)
 
-# Calculate the number sig axes from the PCA and extract the ones you are interested in
+# Check the number of significant axes
 PCs <-sigPC(site = purple)
 
 # Plot a PC that you are interested in and also plot where the disturbance event is
 
 par(mfrow= c(2,1))
-plot.pca.time(site = purple, pcaWant= 1, distEvents)
-plot.pca.time(site = purple, pcaWant= 2, distEvents)
+plot.pca.time(site = purple, pcaWant= 1, distEvents, PCs)
+plot.pca.time(site = purple, pcaWant= 2, distEvents, PCs)
 
 
 # define how many PCs you want
@@ -88,15 +89,15 @@ nGroups <- 2
 zones <- makeZones(clust, nGroups, site = purple)
 
 # Now we need to build a list with all the parts recovery rates involved
-resList <- list( ages = zones$ages, zones = zones, recov = recov, PC = PC, BC = BC, nPCs = nPCs)
+resList <- list( ages = zones$ages, zones = zones, recov = recov, PC = PCs, BC = BC, nPCs = nPCs)
 
 
 ### NOW MAKE FIGURE 1
-plotFig1(resList)
+plotFig1(resList, nPCs, PCs)
 
 
 # Now make FIgure 3
-plotFig3(resList)
+plotFig3(resList$recov)
 
 
 

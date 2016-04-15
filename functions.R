@@ -219,10 +219,10 @@ plotFig1 <- function(resList, nPCs, PCs) {
 ###### FIGURE 3 PLOT 
 
 # Table contains the disturbance event, the BC score for that disturbance event and the estimated recovery rate
-
 plotFig3 <- function(recov){
 	with(recov, {
        plot(magnitude, recov, xlab = "Bray-Curtis Dissimilarity", ylab = "Recovery Rate", pch = 20, col = "blue")
        })
 }
+
 
